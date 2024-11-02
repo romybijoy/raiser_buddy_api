@@ -29,9 +29,10 @@ public class UsersDTO {
     private Role role;
     private String image;
     private String block_reason;
+    private Double walletBalance;
     private boolean enabled;
-    private OurUsers ourUsers;
-    private List<OurUsers> ourUsersList;
-    private List<Address> addresses;
+    private UserDTO ourUsers;
+    private List<UserDTO> ourUsersList;
+    private List<AddressDTO> addresses;
 
 }

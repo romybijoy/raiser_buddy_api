@@ -15,7 +15,7 @@ public class UsersResponse {
 
     private int statusCode;
     private String message;
-    private List<OurUsers> content;
+    private List<UserDTO> content;
     private Integer pageNumber;
     private Integer pageSize;
     private Long totalElements;

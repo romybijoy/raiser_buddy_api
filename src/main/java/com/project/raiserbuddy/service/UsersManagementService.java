@@ -13,6 +13,7 @@ import com.project.raiserbuddy.util.OtpUtil;
 import jakarta.mail.MessagingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -50,6 +51,9 @@ public class UsersManagementService {
     @Lazy
     private CartService cartService;
 
+    @Autowired
+    public ModelMapper modelMapper;
+
     public OurUsers findUserById(Integer userId) throws UserException {
         Optional<OurUsers> user=usersRepo.findById(userId);
 
@@ -74,7 +78,7 @@ public class UsersManagementService {
 //        return user;
 //    }
 
-    public UsersDTO register(UsersDTO registrationRequest){
+    public UsersDTO register(UsersRequest registrationRequest){
         UsersDTO resp = new UsersDTO();
         Optional<OurUsers> users = usersRepo.findByEmail(registrationRequest.getEmail());
 
@@ -82,6 +86,8 @@ public class UsersManagementService {
             throw new APIException("User with the email '" + registrationRequest.getEmail() + "' already exists !!!", 409);
         }
         String otp = otpUtil.generateOtp();
+        if(registrationRequest.getRole() == Role.USER){
+
         if(!Objects.equals(registrationRequest.getEmail(), "")) {
 
             try {
@@ -89,7 +95,7 @@ public class UsersManagementService {
             } catch (MessagingException e) {
                 throw new RuntimeException("Unable to send otp please try again");
             }
-        }
+        }}
         try {
             OurUsers ourUser = new OurUsers();
             ourUser.setEmail(registrationRequest.getEmail());
@@ -106,7 +112,8 @@ public class UsersManagementService {
 
             if (ourUsersResult.getId()>0) {
                 cartService.createCart(ourUsersResult);
-                resp.setOurUsers((ourUsersResult));
+                UserDTO user = modelMapper.map(ourUsersResult, UserDTO.class);
+                resp.setOurUsers(user);
                 resp.setMessage("User Saved Successfully");
                 resp.setStatusCode(200);
             }
@@ -216,6 +223,11 @@ public class UsersManagementService {
 
         List<OurUsers> users = pageUsers.getContent();
 
+
+        List<UserDTO> userDTOs = users.stream().map(user -> modelMapper.map(user, UserDTO.class))
+                .toList();
+
+
         if (users.isEmpty()) {
             throw new APIException("No users is created till now", 404);
         }
@@ -225,7 +237,7 @@ public class UsersManagementService {
 
         usersResponse.setMessage("Users fetched Successfully");
         usersResponse.setStatusCode(302);
-        usersResponse.setContent(users);
+        usersResponse.setContent(userDTOs);
         usersResponse.setPageNumber(pageUsers.getNumber());
         usersResponse.setPageSize(pageUsers.getSize());
         usersResponse.setTotalElements(pageUsers.getTotalElements());
@@ -250,14 +262,14 @@ public class UsersManagementService {
             throw new APIException("Users not found with keyword: " + keyword, 404);
         }
 
-//        List<UsersDTO> usersDTOs = users.stream().map(p -> modelMapper.map(p, UsersDTO.class))
-//                .collect(Collectors.toList());
+        List<UserDTO> usersDTOs = users.stream().map(user -> modelMapper.map(user, UserDTO.class))
+                .toList();
 
         UsersResponse usersResponse = new UsersResponse();
 
         usersResponse.setMessage("Users fetched Successfully");
         usersResponse.setStatusCode(302);
-        usersResponse.setContent(users);
+        usersResponse.setContent(usersDTOs);
         usersResponse.setPageNumber(pageUsers.getNumber());
         usersResponse.setPageSize(pageUsers.getSize());
         usersResponse.setTotalElements(pageUsers.getTotalElements());
@@ -271,7 +283,9 @@ public class UsersManagementService {
         UsersDTO usersDTO = new UsersDTO();
         try {
             OurUsers usersById = usersRepo.findById(id).orElseThrow(() -> new RuntimeException("User Not found"));
-            usersDTO.setOurUsers(usersById);
+
+            UserDTO user = modelMapper.map(usersById, UserDTO.class);
+            usersDTO.setOurUsers(user);
             usersDTO.setStatusCode(200);
             usersDTO.setMessage("Users with id '" + id + "' found successfully");
         } catch (Exception e) {
@@ -285,7 +299,9 @@ public class UsersManagementService {
         UsersDTO usersDTO = new UsersDTO();
         try {
             List<OurUsers> users = usersRepo.findByRoleContaining(String.valueOf(role));
-            usersDTO.setOurUsersList(users);
+            List<UserDTO> userDTO = users.stream().map(user -> modelMapper.map(user, UserDTO.class))
+                    .toList();
+            usersDTO.setOurUsersList(userDTO);
             usersDTO.setStatusCode(200);
             usersDTO.setMessage("Users with role '" + role + "' found successfully");
         } catch (Exception e) {
@@ -334,7 +350,8 @@ public class UsersManagementService {
                 }
 
                 OurUsers savedUser = usersRepo.save(existingUser);
-                usersDTO.setOurUsers(savedUser);
+                UserDTO user = modelMapper.map(savedUser, UserDTO.class);
+                usersDTO.setOurUsers(user);
                 usersDTO.setStatusCode(200);
                 usersDTO.setMessage("User updated successfully");
             } else {
@@ -354,12 +371,14 @@ public class UsersManagementService {
         try {
             Optional<OurUsers> userOptional = usersRepo.findByEmail(email);
             if (userOptional.isPresent()) {
-                usersDTO.setOurUsers(userOptional.get());
+
+                UserDTO user = modelMapper.map(userOptional.get(), UserDTO.class);
+                usersDTO.setOurUsers(user);
                 usersDTO.setStatusCode(200);
                 usersDTO.setMessage("successful");
             } else {
                 usersDTO.setStatusCode(404);
-                usersDTO.setMessage("User not found for update");
+                usersDTO.setMessage("User not found");
             }
 
         }catch (Exception e){

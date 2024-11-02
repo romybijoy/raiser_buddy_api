@@ -1,10 +1,7 @@
 package com.project.raiserbuddy.controller;
 
 import com.project.raiserbuddy.config.AppConstants;
-import com.project.raiserbuddy.dto.CategoryResponse;
-import com.project.raiserbuddy.dto.ProductResponse;
-import com.project.raiserbuddy.dto.UsersDTO;
-import com.project.raiserbuddy.dto.UsersResponse;
+import com.project.raiserbuddy.dto.*;
 import com.project.raiserbuddy.entity.OurUsers;
 import com.project.raiserbuddy.enums.Role;
 import com.project.raiserbuddy.service.UsersManagementService;
@@ -23,7 +20,7 @@ public class UserManagementController {
     private UsersManagementService usersManagementService;
 
     @PostMapping("/auth/register")
-    public ResponseEntity<UsersDTO> register( @Valid @RequestBody UsersDTO reg){
+    public ResponseEntity<UsersDTO> register( @Valid @RequestBody UsersRequest reg){
         UsersDTO response = usersManagementService.register(reg);
 
         if(response.getStatusCode() == 500){
