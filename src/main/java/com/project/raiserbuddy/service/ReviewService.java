@@ -1,11 +1,17 @@
 package com.project.raiserbuddy.service;
 
 import com.project.raiserbuddy.dto.ReviewDTO;
+import com.project.raiserbuddy.dto.ReviewRequest;
 import com.project.raiserbuddy.dto.ReviewResponse;
+import com.project.raiserbuddy.entity.OurUsers;
+import com.project.raiserbuddy.entity.Product;
 import com.project.raiserbuddy.entity.Reviews;
 import com.project.raiserbuddy.exceptions.APIException;
+import com.project.raiserbuddy.exceptions.ProductException;
 import com.project.raiserbuddy.exceptions.ResourceNotFoundException;
+import com.project.raiserbuddy.repository.ProductRepository;
 import com.project.raiserbuddy.repository.ReviewRepository;
+import com.project.raiserbuddy.repository.UsersRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -24,17 +31,32 @@ public class ReviewService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private UsersRepository userRepository;
 
+    @Autowired
+    private ProductService productService;
+    @Autowired
+    private ProductRepository productRepository;
 
-    public ReviewDTO  createReview(Reviews review){
-        ReviewDTO resp = new ReviewDTO();
-        Reviews savedReview = reviewRepository.save(review);
+    public Reviews createReview(ReviewRequest req, String email) throws ProductException {
+        OurUsers user = userRepository.findByEmail(email).orElseThrow();
+        Product product=productService.findProductById(req.getProductId());
+        Reviews review=new Reviews();
+        review.setUser(user);
+        review.setProduct(product);
+        review.setReview(req.getReview());
+        review.setRating(req.getRating());
+        review.setCreatedAt(LocalDateTime.now());
 
-        resp.setMessage("Review Saved Successfully");
-        resp.setStatusCode(201);
-        modelMapper.map(savedReview, resp);
+//		product.getReviews().add(review);
+        productRepository.save(product);
+        return reviewRepository.save(review);
+    }
 
-        return resp;
+    public List<Reviews> getAllReview(Integer productId) {
+
+        return reviewRepository.getAllProductsReview(productId);
     }
 
 
