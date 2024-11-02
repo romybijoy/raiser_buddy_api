@@ -30,9 +30,9 @@ public class ProductDTO {
 
     private Double quantity;
     private List<String> images;
-    private Product product;
-    private List<Product> productList;
-    private Category category_id;
-    private List<Reviews> reviews;
+    private ProdDTO product;
+    private List<ProdDTO> productList;
+    private CatgryDTO category_id;
+    private List<ReviewsDTO> reviews;
     private boolean status;
 }

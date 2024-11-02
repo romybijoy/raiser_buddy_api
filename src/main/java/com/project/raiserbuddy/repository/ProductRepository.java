@@ -37,4 +37,23 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     Page<Product> findByNameIgnoreCaseContainingAndStatus(String keyword, boolean status, Pageable pageDetails);
 
+    @Query("SELECT p FROM Product p " +
+            "WHERE (p.category.name = :category OR :category = '') " +
+           "AND ((:minPrice IS NULL AND :maxPrice IS NULL) OR (p.specialPrice BETWEEN :minPrice AND :maxPrice)) " +
+            "AND (:minDiscount IS NULL OR p.discount >= :minDiscount) " +
+//            "AND p.status=true"+
+            "ORDER BY " +
+            "CASE WHEN :sort = 'price_low' THEN p.specialPrice END ASC, " +
+            "CASE WHEN :sort = 'price_high' THEN p.specialPrice END DESC, "+
+            "p.createdAt DESC")
+    List<Product> filterProducts(
+            @Param("category") String category,
+            @Param("minPrice") Integer minPrice,
+            @Param("maxPrice") Integer maxPrice,
+            @Param("minDiscount") Integer minDiscount,
+            @Param("sort") String sort
+    );
+
+    public List<Product> findTop10ByOrderByCreatedAtDesc();
+
 }

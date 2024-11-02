@@ -7,9 +7,12 @@ import com.project.raiserbuddy.entity.Product;
 import com.project.raiserbuddy.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 //@Tag(name="User", description="The User API")
 @RestController
@@ -38,6 +41,18 @@ public class ProductController {
         return new ResponseEntity<ProductResponse>(productResponse, HttpStatus.FOUND);
     }
 
+    @GetMapping("/filter")
+    public ResponseEntity<Page<Product>> findProductByCategoryHandler(@RequestParam String category,@RequestParam Integer minPrice,
+                                                                      @RequestParam Integer maxPrice, @RequestParam Integer minDiscount, @RequestParam String sort,
+                                                                      @RequestParam String stock, @RequestParam Integer pageNumber, @RequestParam Integer pageSize){
+
+
+        Page<Product> res= productService.getProductsInUser(category, minPrice, maxPrice, minDiscount, sort,stock,pageNumber,pageSize);
+
+        System.out.println("complete products");
+        return new ResponseEntity<>(res,HttpStatus.ACCEPTED);
+
+    }
     @GetMapping("/{id}")
     public ResponseEntity<ProductDTO> getProductByID(@PathVariable Integer id){
         ProductDTO response = productService.getProductById(id);

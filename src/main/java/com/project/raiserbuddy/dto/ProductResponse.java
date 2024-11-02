@@ -14,7 +14,7 @@ public class ProductResponse {
 
     private int statusCode;
     private String message;
-    private List<Product> content;
+    private List<ProdDTO> content;
     private Integer pageNumber;
     private Integer pageSize;
     private Long totalElements;

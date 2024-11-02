@@ -11,10 +11,7 @@ import com.project.raiserbuddy.repository.CategoryRepository;
 import com.project.raiserbuddy.repository.ProductRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -145,6 +142,9 @@ product.setStatus(true);
 
         List<Product> products = pageCategories.getContent();
 
+        List<ProdDTO> productDTOs = products.stream().map(product -> modelMapper.map(product, ProdDTO.class))
+                .toList();
+
         if (products.isEmpty()) {
             throw new APIException("No product is created till now", 404);
         }
@@ -155,7 +155,7 @@ product.setStatus(true);
 
         productResponse.setMessage("Product fetched Successfully");
         productResponse.setStatusCode(302);
-        productResponse.setContent(products);
+        productResponse.setContent(productDTOs);
         productResponse.setPageNumber(pageCategories.getNumber());
         productResponse.setPageSize(pageCategories.getSize());
         productResponse.setTotalElements(pageCategories.getTotalElements());
@@ -180,14 +180,14 @@ product.setStatus(true);
             throw new APIException("Products not found with keyword: " + keyword, 404);
         }
 
-        List<ProductDTO> productDTOs = products.stream().map(p -> modelMapper.map(p, ProductDTO.class))
-                .collect(Collectors.toList());
+        List<ProdDTO> productDTOs = products.stream().map(p -> modelMapper.map(p, ProdDTO.class))
+                .toList();
 
         ProductResponse productResponse = new ProductResponse();
 
         productResponse.setMessage("Products fetched Successfully");
         productResponse.setStatusCode(302);
-        productResponse.setContent(products);
+        productResponse.setContent(productDTOs);
         productResponse.setPageNumber(pageProducts.getNumber());
         productResponse.setPageSize(pageProducts.getSize());
         productResponse.setTotalElements(pageProducts.getTotalElements());
@@ -199,9 +199,16 @@ product.setStatus(true);
 
     public ProductDTO getProductById(Integer id) {
         ProductDTO productDTO = new ProductDTO();
+
         try {
             Product productById = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product Not found"));
-            productDTO.setProduct(productById);
+//           List<ReviewDTO> reviews = productById.getReviews().stream()
+//                    .map(review -> new ReviewDTO(review.getReview_id(), review.getReview(),review.getRating(),review.getUser().getName(),review.getCreatedAt()))
+//                    .collect(Collectors.toList());
+
+            ProdDTO product = modelMapper.map(productById, ProdDTO.class);
+            productDTO.setProduct(product);
+//            productDTO.setReviews(reviews);
             productDTO.setStatusCode(200);
             productDTO.setMessage("Product with id '" + id + "' found successfully");
         } catch (Exception e) {
@@ -209,6 +216,36 @@ product.setStatus(true);
             productDTO.setMessage("Error occurred: " + e.getMessage());
         }
         return productDTO;
+    }
+
+    public Page<Product> getProductsInUser(String category, Integer minPrice, Integer maxPrice,
+                                       Integer minDiscount,String sort, String stock, Integer pageNumber, Integer pageSize ) {
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        List<Product> products = productRepository.filterProducts(category, minPrice, maxPrice, minDiscount, sort);
+
+
+
+        if(stock!=null) {
+
+            if(stock.equals("in_stock")) {
+                products=products.stream().filter(p->p.getQuantity()>0).collect(Collectors.toList());
+            }
+            else if (stock.equals("out_of_stock")) {
+                products=products.stream().filter(p->p.getQuantity()<1).collect(Collectors.toList());
+            }
+
+
+        }
+        int startIndex = (int) pageable.getOffset();
+        int endIndex = Math.min(startIndex + pageable.getPageSize(), products.size());
+
+        List<Product> pageContent = products.subList(startIndex, endIndex);
+        Page<Product> filteredProducts = new PageImpl<>(pageContent, pageable, products.size());
+        return filteredProducts; // If color list is empty, do nothing and return all products
+
+
     }
 
     public ProductDTO getProductByCategory(Integer id) {
@@ -224,7 +261,9 @@ product.setStatus(true);
                 throw new ResourceNotFoundException("Product", "categoryId", id, 404);
             }
 
-            productDTO.setProductList(products);
+            List<ProdDTO> productDTOs = products.stream().map(product -> modelMapper.map(product, ProdDTO.class))
+                    .toList();
+            productDTO.setProductList(productDTOs);
             productDTO.setStatusCode(200);
             productDTO.setMessage("Product with category id '" + id + "' found successfully");
         } catch (Exception e) {
