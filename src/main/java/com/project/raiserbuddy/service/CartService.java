@@ -227,21 +227,12 @@ public class CartService {
     @Autowired
     private UsersRepository userRepo;
 
-
-//    public CartServiceImplementation(CartRepository cartRepository,CartItemService cartItemService,
-//                                     ProductService productService) {
-//        this.cartRepository=cartRepository;
-//        this.productService=productService;
-//        this.cartItemService=cartItemService;
-//    }
-
-
-    public Cart createCart(OurUsers user) {
+    public void createCart(OurUsers user) {
 
         Cart cart = new Cart();
         cart.setUser(user);
-        Cart createdCart=cartRepository.save(cart);
-        return createdCart;
+        Cart createdCart;
+        createdCart = cartRepository.save(cart);
     }
 
     public Cart findUserCart(String email) {
@@ -251,8 +242,8 @@ public class CartService {
         int totalDiscountedPrice=0;
         int totalItem=0;
         for(CartItem cartsItem : cart.getCartItems()) {
-            totalPrice+=cartsItem.getPrice();
-            totalDiscountedPrice+=cartsItem.getDiscountedPrice();
+            totalPrice+= (int) cartsItem.getPrice();
+            totalDiscountedPrice+= (int) cartsItem.getDiscountedPrice();
             totalItem+=cartsItem.getQuantity();
         }
 
@@ -261,8 +252,9 @@ public class CartService {
         cart.setTotalDiscountedPrice(totalDiscountedPrice);
         cart.setDiscount(totalPrice-totalDiscountedPrice);
         cart.setTotalItem(totalItem);
-
-        return cartRepository.save(cart);
+        Cart cartOut;
+        cartOut = cartRepository.save(cart);
+        return cartOut;
 
     }
 

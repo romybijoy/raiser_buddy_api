@@ -1,6 +1,5 @@
 package com.project.raiserbuddy.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.raiserbuddy.enums.Role;
 import jakarta.persistence.*;
@@ -16,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name= "ourusers")
@@ -33,7 +33,7 @@ public class OurUsers implements UserDetails {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Pattern(regexp = "^[a-zA-Z]*$", message = "Name must not contain numbers or special characters")
+//    @Pattern(regexp = "^[a-zA-Z]*$", message = "Name must not contain numbers or special characters")
     private String name;
     private String password;
 
@@ -47,22 +47,42 @@ public class OurUsers implements UserDetails {
 
     private String image;
 
-
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch =  FetchType.LAZY)
-    @JoinTable(name = "user_address",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "add_id", referencedColumnName = "add_id"))
-    @JsonIgnoreProperties("users")
-    private List<Address> addresses = new ArrayList<>();;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference("addRef")
+    private List<Address> addresses=new ArrayList<>();
 
     private String block_reason;
 
-    @OneToMany(mappedBy = "user")
-    private List<Reviews> reviews;
+    @Embedded
+    @ElementCollection
+    @CollectionTable(name="payment_information",joinColumns = @JoinColumn(name="user_id"))
+    private List<PaymentInformation> paymentInformation=new ArrayList<>();
+
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)
+    @JsonManagedReference("ratingRef")
+    private List<Rating> ratings=new ArrayList<>();
+
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)
+    @JsonManagedReference("revRef")
+    private List<Reviews> reviews=new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)
+    @JsonManagedReference("userOrderRef")
+    private List<Order> orders=new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference("wishRef")
+    private Set<Wishlist> wishlists;
+
+    private LocalDateTime createdAt;
 
     private boolean enabled;
 
     private String otp;
+
+    private Double walletBalance;
 
     private LocalDateTime otpGeneratedTime;
 

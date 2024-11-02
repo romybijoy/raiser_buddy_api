@@ -1,6 +1,8 @@
 package com.project.raiserbuddy.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,7 +31,7 @@ public class Cart {
 
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "cart", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("cart")
+    @JsonManagedReference("cartRef")
     @Column(name = "cart_items")
     private Set<CartItem> cartItems = new HashSet<>();
 

@@ -1,18 +1,31 @@
 package com.project.raiserbuddy.dto;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CartDTO {
 
-    private Long cartId;
-    private Double totalPrice = 0.0;
-    private List<ProductDTO> products = new ArrayList<>();
+    private Integer cartId;
+
+    private UserDTO user;
+
+    private Set<CartItemDTO> cartItems;
+
+    private double totalPrice;
+
+    private int totalItem;
+
+    private int totalDiscountedPrice;
+
+    private int discount;
+
 }

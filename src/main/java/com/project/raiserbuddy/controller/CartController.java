@@ -3,6 +3,7 @@ package com.project.raiserbuddy.controller;
 import com.project.raiserbuddy.dto.APIResponse;
 import com.project.raiserbuddy.dto.AddItemRequest;
 import com.project.raiserbuddy.dto.CartDTO;
+import com.project.raiserbuddy.dto.ProdDTO;
 import com.project.raiserbuddy.entity.Cart;
 import com.project.raiserbuddy.entity.CartItem;
 import com.project.raiserbuddy.entity.OurUsers;
@@ -11,6 +12,7 @@ import com.project.raiserbuddy.exceptions.UserException;
 import com.project.raiserbuddy.repository.UsersRepository;
 import com.project.raiserbuddy.service.CartService;
 import com.project.raiserbuddy.service.UsersManagementService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -66,19 +68,24 @@ public class CartController {
     @Autowired
     private UsersManagementService userService;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
 //    public CartController(CartService cartService,UserService userService) {
 //        this.cartService=cartService;
 //        this.userService=userService;
 //    }
 
     @GetMapping("/{email}")
-    public ResponseEntity<Cart> findUserCartHandler( @PathVariable String email) throws UserException{
+    public ResponseEntity<CartDTO> findUserCartHandler( @PathVariable String email) throws UserException{
 
         Cart cart=cartService.findUserCart(email);
 
+        CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
+
         System.out.println("cart - "+cart.getUser().getEmail());
 
-        return new ResponseEntity<Cart>(cart,HttpStatus.OK);
+        return new ResponseEntity<CartDTO>(cartDTO,HttpStatus.OK);
     }
 
     @PutMapping("/add/{email}")

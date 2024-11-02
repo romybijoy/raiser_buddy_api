@@ -26,7 +26,7 @@ public interface CartItemRepository extends JpaRepository<CartItem, Integer> {
 //	Order findOrderByEmailAndOrderId(String email, Integer orderId);
 
     @Modifying
-    @Query("DELETE FROM CartItem ci WHERE ci.cart.id = ?1 AND ci.product.id = ?2")
+    @Query("DELETE FROM CartItem ci WHERE ci.cart.cartId = ?1 AND ci.product.productId = ?2")
     void deleteCartItemByProductIdAndCartId(Integer Integer, Integer cartId);
 
       @Query("SELECT ci From CartItem ci Where ci.cart=:cart And ci.product=:product And ci.userId=:userId")

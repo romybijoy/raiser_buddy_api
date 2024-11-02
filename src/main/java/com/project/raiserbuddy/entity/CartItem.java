@@ -1,7 +1,9 @@
 package com.project.raiserbuddy.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,11 +25,11 @@ public class CartItem {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "cart", referencedColumnName = "cart_id")
-    @JsonIgnoreProperties("cart_item")
+    @JsonBackReference("cartRef")
     private Cart cart;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id")
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "prod_id")
     private Product product;
 
     private Integer quantity;
