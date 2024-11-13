@@ -20,7 +20,9 @@ public class CouponDTO {
     private String token;
     private String message;
     private String code;
+    private String title;
 
+    private String desc;
     private double discount;
 
     private String discountType;

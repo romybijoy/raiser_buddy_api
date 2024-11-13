@@ -6,14 +6,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-//@ToString
 @Entity
 @Table(name = "coupon")
 public class Coupon {
@@ -23,6 +21,10 @@ public class Coupon {
     private Integer id;
 
     private String code;
+
+    private String title;
+
+    private String desc;
 
     private double discount; // Could be percentage or fixed amount
 

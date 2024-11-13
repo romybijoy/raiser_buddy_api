@@ -2,11 +2,8 @@ package com.project.raiserbuddy.controller;
 
 
 import com.project.raiserbuddy.config.AppConstants;
-import com.project.raiserbuddy.dto.CategoryDTO;
-import com.project.raiserbuddy.dto.CategoryResponse;
 import com.project.raiserbuddy.dto.CouponDTO;
 import com.project.raiserbuddy.dto.CouponResponse;
-import com.project.raiserbuddy.entity.Category;
 import com.project.raiserbuddy.entity.Coupon;
 import com.project.raiserbuddy.service.CouponService;
 import jakarta.validation.Valid;
@@ -15,8 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/coupon")
