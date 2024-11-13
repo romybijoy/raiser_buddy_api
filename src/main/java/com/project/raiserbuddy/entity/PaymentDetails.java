@@ -2,7 +2,6 @@ package com.project.raiserbuddy.entity;
 
 import com.project.raiserbuddy.enums.PaymentMethod;
 import com.project.raiserbuddy.enums.PaymentStatus;
-import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
