@@ -11,4 +11,6 @@ public interface ReviewRepository extends JpaRepository<Reviews, Integer> {
 
     @Query("Select r from Reviews r where r.product.id=:productId")
     List<Reviews> getAllProductsReview(@Param("productId") Integer productId);
+
+
 }

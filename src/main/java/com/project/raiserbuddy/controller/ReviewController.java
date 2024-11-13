@@ -1,15 +1,11 @@
 package com.project.raiserbuddy.controller;
 
-import com.project.raiserbuddy.config.AppConstants;
-import com.project.raiserbuddy.dto.ReviewDTO;
 import com.project.raiserbuddy.dto.ReviewRequest;
-import com.project.raiserbuddy.dto.ReviewResponse;
 import com.project.raiserbuddy.entity.Reviews;
 import com.project.raiserbuddy.exceptions.ProductException;
 import com.project.raiserbuddy.exceptions.UserException;
 import com.project.raiserbuddy.service.ReviewService;
 import com.project.raiserbuddy.service.UsersManagementService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

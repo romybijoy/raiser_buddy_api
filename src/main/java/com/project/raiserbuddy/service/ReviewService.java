@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -49,9 +48,21 @@ public class ReviewService {
         review.setRating(req.getRating());
         review.setCreatedAt(LocalDateTime.now());
 
+        updateAverageRating(product); // update average rating
+
 //		product.getReviews().add(review);
         productRepository.save(product);
         return reviewRepository.save(review);
+    }
+
+
+    private void updateAverageRating(Product product) {
+        List<Reviews> ratings = reviewRepository.getAllProductsReview(product.getProductId());
+        double average = ratings.stream()
+                .mapToDouble(Reviews::getRating)
+                .average() .orElse(0.0);
+        product.setAvgRating(average);
+        productRepository.save(product);
     }
 
     public List<Reviews> getAllReview(Integer productId) {
