@@ -2,7 +2,6 @@ package com.project.raiserbuddy.controller;
 
 import com.project.raiserbuddy.config.AppConstants;
 import com.project.raiserbuddy.dto.*;
-import com.project.raiserbuddy.entity.Category;
 import com.project.raiserbuddy.entity.Product;
 import com.project.raiserbuddy.service.ProductService;
 import jakarta.validation.Valid;
@@ -108,6 +107,12 @@ public class ProductController {
         }
         return ResponseEntity.ok(response);
 
+    }
+
+    @GetMapping("/top10")
+    public List<ProdDTO> getTop10BestSellingProducts()
+    {
+        return productService.getTop10BestSellingProducts();
     }
 
 }

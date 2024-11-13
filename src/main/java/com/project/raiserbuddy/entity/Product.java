@@ -1,14 +1,13 @@
 package com.project.raiserbuddy.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -18,7 +17,6 @@ import java.util.Set;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-//@ToString
 public class Product {
 
     @Id
@@ -52,14 +50,21 @@ public class Product {
     @JsonBackReference("procatref")
     private Category category;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY,cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference("prodWishRef")
-    private Set<Wishlist> wishlists;
+//    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY,cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonBackReference("prodWishRef")
+//    private Set<Wishlist> wishlists;
+
+    @ManyToMany(mappedBy = "products")
+    private Set<Wishlist> wishlists = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "provider", referencedColumnName = "id")
+    @JsonBackReference("providerProRef")
+    private Provider provider;
 
     private boolean status;
-
+    private int sales;
     private double discount;
     private double specialPrice;
     private LocalDateTime createdAt;
-
 }

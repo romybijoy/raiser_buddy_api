@@ -1,12 +1,8 @@
 package com.project.raiserbuddy.service;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
 import com.project.raiserbuddy.dto.CategoryDTO;
 import com.project.raiserbuddy.dto.CategoryResponse;
-import com.project.raiserbuddy.dto.ProductDTO;
-import com.project.raiserbuddy.dto.ProductResponse;
 import com.project.raiserbuddy.entity.Category;
-import com.project.raiserbuddy.entity.Product;
 import com.project.raiserbuddy.exceptions.APIException;
 import com.project.raiserbuddy.exceptions.ResourceNotFoundException;
 import com.project.raiserbuddy.repository.CategoryRepository;
@@ -20,8 +16,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Transactional
 @Service

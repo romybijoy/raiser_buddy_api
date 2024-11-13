@@ -2,10 +2,7 @@ package com.project.raiserbuddy.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.project.raiserbuddy.entity.Category;
-import com.project.raiserbuddy.entity.OurUsers;
-import com.project.raiserbuddy.entity.Product;
-import com.project.raiserbuddy.entity.Reviews;
+import com.project.raiserbuddy.entity.*;
 import lombok.Data;
 
 import java.util.List;
@@ -34,5 +31,6 @@ public class ProductDTO {
     private List<ProdDTO> productList;
     private CatgryDTO category_id;
     private List<ReviewsDTO> reviews;
+    private Provider provider;
     private boolean status;
 }

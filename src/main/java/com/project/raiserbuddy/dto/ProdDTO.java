@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.project.raiserbuddy.entity.Category;
-import com.project.raiserbuddy.entity.Product;
-import com.project.raiserbuddy.entity.Rating;
-import com.project.raiserbuddy.entity.Reviews;
+import com.project.raiserbuddy.entity.*;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -39,8 +36,9 @@ public class ProdDTO {
     private CatgryDTO category;
 
     private boolean status;
-
+    private Provider provider;
     private double discount;
     private double specialPrice;
+    private int sales;
     private LocalDateTime createdAt;
 }

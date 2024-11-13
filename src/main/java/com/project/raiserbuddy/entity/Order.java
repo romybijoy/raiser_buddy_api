@@ -2,8 +2,6 @@ package com.project.raiserbuddy.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.raiserbuddy.enums.OrderStatus;
 import jakarta.persistence.*;

@@ -1,26 +1,17 @@
 package com.project.raiserbuddy.service;
 
 import com.project.raiserbuddy.dto.AddItemRequest;
-import com.project.raiserbuddy.dto.CartDTO;
-import com.project.raiserbuddy.dto.ProductDTO;
 import com.project.raiserbuddy.entity.Cart;
 import com.project.raiserbuddy.entity.CartItem;
 import com.project.raiserbuddy.entity.OurUsers;
 import com.project.raiserbuddy.entity.Product;
-import com.project.raiserbuddy.exceptions.APIException;
 import com.project.raiserbuddy.exceptions.ProductException;
-import com.project.raiserbuddy.exceptions.ResourceNotFoundException;
-import com.project.raiserbuddy.repository.CartItemRepository;
 import com.project.raiserbuddy.repository.CartRepository;
-import com.project.raiserbuddy.repository.ProductRepository;
 import com.project.raiserbuddy.repository.UsersRepository;
 import jakarta.transaction.Transactional;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Transactional
 @Service

@@ -3,22 +3,27 @@ package com.project.raiserbuddy.controller;
 import com.project.raiserbuddy.config.AppConstants;
 import com.project.raiserbuddy.dto.CategoryDTO;
 import com.project.raiserbuddy.dto.CategoryResponse;
-import com.project.raiserbuddy.dto.ProductResponse;
+import com.project.raiserbuddy.dto.CategorySales;
 import com.project.raiserbuddy.entity.Category;
 import com.project.raiserbuddy.service.CategoryService;
+import com.project.raiserbuddy.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-//@Tag(name="Category", description="The Category API")
+import java.util.List;
+
 @RestController
 @RequestMapping("/category")
 public class CategoryController {
 
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private ProductService productService;
+
 
     @PostMapping()
     public ResponseEntity<CategoryDTO> create(@Valid @RequestBody Category category){
@@ -76,4 +81,9 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.deleteCategory(id));
     }
 
+
+    @GetMapping("/top10")
+    public List<CategorySales> getTop10BestSellingCategories() {
+        return productService.getTop10BestSellingCategories();
+    }
 }

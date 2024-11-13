@@ -35,4 +35,7 @@ public interface UsersRepository extends JpaRepository<OurUsers, Integer> {
 
 
     Page<OurUsers> findByNameOrEmailIgnoreCaseContainingAndEnabled(String keyword, String email, Boolean enabled, Pageable pageDetails);
+
+    @Query(value="SELECT COUNT(*) FROM ourusers o WHERE o.enabled=true", nativeQuery = true)
+    Long countUsers();
 }

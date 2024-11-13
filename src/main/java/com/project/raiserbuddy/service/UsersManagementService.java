@@ -1,9 +1,7 @@
 package com.project.raiserbuddy.service;
 
 import com.project.raiserbuddy.dto.*;
-import com.project.raiserbuddy.entity.Category;
 import com.project.raiserbuddy.entity.OurUsers;
-import com.project.raiserbuddy.entity.Product;
 import com.project.raiserbuddy.enums.Role;
 import com.project.raiserbuddy.exceptions.APIException;
 import com.project.raiserbuddy.exceptions.UserException;

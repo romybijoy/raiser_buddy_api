@@ -1,6 +1,5 @@
 package com.project.raiserbuddy.service;
 
-import com.project.raiserbuddy.dto.AddressDTO;
 import com.project.raiserbuddy.dto.OrderDTO;
 import com.project.raiserbuddy.dto.OrderResponse;
 import com.project.raiserbuddy.entity.*;
@@ -45,6 +44,9 @@ public class OrderService {
 	private CartRepository cartRepository;
 
 	@Autowired
+	private ProductRepository productRepository;
+
+	@Autowired
 	public ModelMapper modelMapper;
 
 	public Order createOrder(String email, Address shippAddress) {
@@ -69,15 +71,27 @@ public class OrderService {
 			OrderItem orderItem=new OrderItem();
 			
 			orderItem.setPrice(item.getPrice());
-			orderItem.setProduct(item.getProduct());
-			orderItem.setQuantity(item.getQuantity());
-			orderItem.setUserId(item.getUserId());
-			orderItem.setDiscountedPrice(item.getDiscountedPrice());
-			
-			
-			OrderItem createdOrderItem=orderItemRepository.save(orderItem);
-			
-			orderItems.add(createdOrderItem);
+// start product deduction and sales update
+			Optional<Product> optionalProduct = productRepository.findById(item.getProduct().getProductId());
+			if (optionalProduct.isPresent()) {
+				Product product = optionalProduct.get();
+				if (product.getQuantity() >= item.getQuantity()) {
+					product.setQuantity(product.getQuantity() - item.getQuantity());
+					product.setSales(product.getSales() + 1);
+					productRepository.save(product);
+
+					orderItem.setProduct(item.getProduct());
+
+					orderItem.setQuantity(item.getQuantity());
+					orderItem.setUserId(item.getUserId());
+					orderItem.setDiscountedPrice(item.getDiscountedPrice());
+
+
+					OrderItem createdOrderItem = orderItemRepository.save(orderItem);
+
+					orderItems.add(createdOrderItem);
+				}
+				}// end product deduction and sales update
 		}
 
 		Order createdOrder=new Order();

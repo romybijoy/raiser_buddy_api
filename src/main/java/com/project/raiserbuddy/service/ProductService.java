@@ -3,7 +3,6 @@ package com.project.raiserbuddy.service;
 import com.project.raiserbuddy.dto.*;
 import com.project.raiserbuddy.entity.Category;
 import com.project.raiserbuddy.entity.Product;
-import com.project.raiserbuddy.entity.Reviews;
 import com.project.raiserbuddy.exceptions.APIException;
 import com.project.raiserbuddy.exceptions.ProductException;
 import com.project.raiserbuddy.exceptions.ResourceNotFoundException;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -366,6 +364,18 @@ product.setStatus(true);
         return resp;
     }
 
+    public List<ProdDTO> getTop10BestSellingProducts()
+    {
 
+        List<Product> products = productRepository.findTop10ByOrderBySalesDesc();
+
+        List<ProdDTO> productDTOs = products.stream().map(product -> modelMapper.map(product, ProdDTO.class))
+                .toList();
+        return productDTOs;
+    }
+
+    public List<CategorySales> getTop10BestSellingCategories() {
+        return productRepository.findTop10CategoriesBySales();
+    }
 
 }
