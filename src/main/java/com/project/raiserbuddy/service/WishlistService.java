@@ -1,7 +1,6 @@
 package com.project.raiserbuddy.service;
 
 import com.project.raiserbuddy.dto.ProdDTO;
-import com.project.raiserbuddy.dto.WishDTO;
 import com.project.raiserbuddy.dto.WishlistDTO;
 import com.project.raiserbuddy.entity.OurUsers;
 import com.project.raiserbuddy.entity.Product;
@@ -13,14 +12,12 @@ import com.project.raiserbuddy.repository.UsersRepository;
 import com.project.raiserbuddy.repository.WishlistRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Transactional
 @Service

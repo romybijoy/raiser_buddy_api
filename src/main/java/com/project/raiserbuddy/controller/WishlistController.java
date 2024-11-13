@@ -2,9 +2,7 @@ package com.project.raiserbuddy.controller;
 
 
 import com.project.raiserbuddy.dto.ProdDTO;
-import com.project.raiserbuddy.dto.ProductDTO;
 import com.project.raiserbuddy.dto.WishlistDTO;
-import com.project.raiserbuddy.entity.Product;
 import com.project.raiserbuddy.exceptions.ProductException;
 import com.project.raiserbuddy.service.WishlistService;
 import org.springframework.beans.factory.annotation.Autowired;

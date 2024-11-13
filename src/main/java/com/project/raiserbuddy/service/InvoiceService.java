@@ -1,6 +1,5 @@
 package com.project.raiserbuddy.service;
 
-import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 

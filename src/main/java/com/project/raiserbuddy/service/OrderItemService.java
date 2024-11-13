@@ -9,9 +9,6 @@ import org.springframework.stereotype.Service;
 public class OrderItemService {
 @Autowired
 	private OrderItemRepository orderItemRepository;
-//	public OrderItemService(OrderItemRepository orderItemRepository) {
-//		this.orderItemRepository=orderItemRepository;
-//	}
 
 	public OrderItem createOrderItem(OrderItem orderItem) {
 		

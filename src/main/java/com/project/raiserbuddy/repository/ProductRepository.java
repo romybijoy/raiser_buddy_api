@@ -1,7 +1,6 @@
 package com.project.raiserbuddy.repository;
 
 import com.project.raiserbuddy.dto.CategorySales;
-import com.project.raiserbuddy.entity.Category;
 import com.project.raiserbuddy.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -55,7 +54,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             @Param("sort") String sort
     );
 
-    public List<Product> findTop10ByOrderByCreatedAtDesc();
+    List<Product> findTop10ByOrderByCreatedAtDesc();
 
     @Query(value="SELECT COUNT(*) FROM product p WHERE p.status=true", nativeQuery = true)
     Long countProducts();

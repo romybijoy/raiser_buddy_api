@@ -1,8 +1,11 @@
 package com.project.raiserbuddy.exceptions;
 
 
+import java.io.Serial;
+
 public class APIException extends RuntimeException {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     int code;

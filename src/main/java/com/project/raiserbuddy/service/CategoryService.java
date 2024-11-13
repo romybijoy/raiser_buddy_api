@@ -27,36 +27,6 @@ public class CategoryService {
     private ModelMapper modelMapper;
 
 
-//    public CategoryDTO  createCategory(CategoryDTO request){
-//        CategoryDTO resp = new CategoryDTO();
-//        Category savedCategory = categoryRepository.findByName(request.getName());
-//
-//        if (savedCategory != null) {
-//            throw new APIException("Category with the name '" + request.getName() + "' already exists !!!");
-//        }
-//
-//        try {
-//            Category category = new Category();
-//            category.setName(request.getName());
-//            category.setDesc(request.getDesc());
-//            category.setStatus(true);
-//            category.setImage(request.getImage());
-//            System.out.println(category);
-//            Category result = categoryRepository.save(category);
-//            if (result.getCategory_id()>0) {
-//                resp.setCategory((result));
-//                resp.setMessage("Category Saved Successfully");
-//                resp.setStatusCode(200);
-//            }
-//
-//        }catch (Exception e){
-//            resp.setStatusCode(500);
-//            resp.setError(e.getMessage());
-//        }
-//        return resp;
-//    }
-
-
     public CategoryDTO  createCategory(Category category){
         CategoryDTO resp = new CategoryDTO();
         Category savedCategory = categoryRepository.findByName(category.getName());

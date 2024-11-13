@@ -1,7 +1,6 @@
 package com.project.raiserbuddy.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.raiserbuddy.enums.ProviderType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -12,8 +11,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 @Entity

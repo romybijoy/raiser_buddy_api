@@ -1,7 +1,6 @@
 package com.project.raiserbuddy.repository;
 
 
-import com.project.raiserbuddy.entity.Category;
 import com.project.raiserbuddy.entity.Coupon;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
