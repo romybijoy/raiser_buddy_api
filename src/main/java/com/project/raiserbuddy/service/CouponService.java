@@ -1,11 +1,7 @@
 package com.project.raiserbuddy.service;
 
-import com.project.raiserbuddy.dto.CategoryResponse;
-import com.project.raiserbuddy.dto.CouponDTO;
 import com.project.raiserbuddy.dto.CouponDTO;
 import com.project.raiserbuddy.dto.CouponResponse;
-import com.project.raiserbuddy.entity.Category;
-import com.project.raiserbuddy.entity.Coupon;
 import com.project.raiserbuddy.entity.Coupon;
 import com.project.raiserbuddy.exceptions.APIException;
 import com.project.raiserbuddy.exceptions.ResourceNotFoundException;

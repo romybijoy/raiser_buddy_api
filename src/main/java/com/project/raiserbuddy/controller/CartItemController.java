@@ -2,10 +2,8 @@ package com.project.raiserbuddy.controller;
 
 import com.project.raiserbuddy.dto.APIResponse;
 import com.project.raiserbuddy.entity.CartItem;
-import com.project.raiserbuddy.entity.OurUsers;
 import com.project.raiserbuddy.exceptions.CartItemException;
 import com.project.raiserbuddy.exceptions.UserException;
-import com.project.raiserbuddy.repository.UsersRepository;
 import com.project.raiserbuddy.service.CartItemService;
 import com.project.raiserbuddy.service.UsersManagementService;
 import org.springframework.beans.factory.annotation.Autowired;

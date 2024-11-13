@@ -3,13 +3,10 @@ package com.project.raiserbuddy.controller;
 import com.project.raiserbuddy.dto.APIResponse;
 import com.project.raiserbuddy.dto.AddItemRequest;
 import com.project.raiserbuddy.dto.CartDTO;
-import com.project.raiserbuddy.dto.ProdDTO;
 import com.project.raiserbuddy.entity.Cart;
 import com.project.raiserbuddy.entity.CartItem;
-import com.project.raiserbuddy.entity.OurUsers;
 import com.project.raiserbuddy.exceptions.ProductException;
 import com.project.raiserbuddy.exceptions.UserException;
-import com.project.raiserbuddy.repository.UsersRepository;
 import com.project.raiserbuddy.service.CartService;
 import com.project.raiserbuddy.service.UsersManagementService;
 import org.modelmapper.ModelMapper;
@@ -17,9 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/cart")

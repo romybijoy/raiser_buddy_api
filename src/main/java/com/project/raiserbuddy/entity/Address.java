@@ -28,10 +28,6 @@ public class Address {
     private String mobile;
     private boolean is_default;
 
-//    @ManyToMany(mappedBy = "addresses", fetch = FetchType.LAZY)
-//    @JsonIgnoreProperties("addresses")
-//    private List<OurUsers> users = new ArrayList<>();
-
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "user",  referencedColumnName = "id")
     @JsonBackReference("addRef")
@@ -40,4 +36,5 @@ public class Address {
     @OneToMany(mappedBy = "shippingAddress", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonManagedReference("ordAddRef")
     private Set<Order> orders = new HashSet<>();
+
 }
