@@ -7,11 +7,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-//@ToString
 @Entity
 @Table(name = "wishlist")
 public class Wishlist {
@@ -25,9 +27,10 @@ public class Wishlist {
     @JsonBackReference("wishRef")
     private OurUsers user;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "product_id", referencedColumnName = "prod_id")
-    @JsonBackReference("prodWishRef")
-    private Product product;
+    @ManyToMany
+    @JoinTable( name = "wishlist_products",
+            joinColumns = @JoinColumn(name = "wishlist_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id") )
+    private Set<Product> products= new HashSet<>();
 
 }
