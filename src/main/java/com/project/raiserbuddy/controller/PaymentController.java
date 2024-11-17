@@ -20,6 +20,7 @@ import com.razorpay.PaymentLink;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 import jakarta.transaction.Transactional;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,7 +60,7 @@ public class PaymentController {
 	@Transactional
 	public ResponseEntity<PaymentLinkResponse> createPaymentLink(@PathVariable Integer orderId,
 																 @RequestHeader("Authorization") String jwt)
-			throws RazorpayException, UserException, OrderException {
+			throws RazorpayException, UserException, OrderException, JSONException {
 
 		Order order = orderService.findOrderById(orderId);
 		try {

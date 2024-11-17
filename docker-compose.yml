@@ -1,0 +1,25 @@
+version: '3.7'
+services:
+ db:
+   image: mysql:8.0
+   environment:
+     MYSQL_ROOT_PASSWORD: good
+     MYSQL_DATABASE: raiserbuddy
+     MYSQL_USER: root
+     MYSQL_PASSWORD: good
+   ports:
+     - "3306:3306"
+   volumes:
+    - db-data:/var/lib/mysql
+ app:
+     build: .
+     environment:
+       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/raiserbuddy
+       SPRING_DATASOURCE_USERNAME: root
+       SPRING_DATASOURCE_PASSWORD: good
+     ports:
+       - "8080:8080"
+     depends_on:
+       - db
+volumes:
+  db-data:
