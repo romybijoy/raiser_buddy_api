@@ -1,6 +1,9 @@
 package com.project.raiserbuddy.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,6 +19,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "wishlist")
+@JsonIdentityInfo(scope=Wishlist.class,generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class Wishlist {
 
     @Id
@@ -31,6 +35,7 @@ public class Wishlist {
     @JoinTable( name = "wishlist_products",
             joinColumns = @JoinColumn(name = "wishlist_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id") )
+//    @JsonManagedReference("wishProRef")
     private Set<Product> products= new HashSet<>();
 
 }

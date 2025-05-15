@@ -33,6 +33,10 @@ public class RatingServices {
         rating.setUser(user);
         rating.setRating(req.getRating());
         rating.setCreatedAt(LocalDateTime.now());
+        int prevNoOfRaring = ratingRepository.findByUser(user).size();
+        //update acg rating on product
+        double newAvgRating =((product.getAvgRating()*prevNoOfRaring )+ req.getRating())/(prevNoOfRaring+1);
+        product.setAvgRating(newAvgRating);
 
         return ratingRepository.save(rating);
     }

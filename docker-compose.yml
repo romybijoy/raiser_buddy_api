@@ -1,25 +1,37 @@
-version: '3.7'
+version: "3.8"
 services:
- db:
-   image: mysql:8.0
-   environment:
-     MYSQL_ROOT_PASSWORD: good
-     MYSQL_DATABASE: raiserbuddy
-     MYSQL_USER: root
-     MYSQL_PASSWORD: good
-   ports:
-     - "3306:3306"
-   volumes:
-    - db-data:/var/lib/mysql
- app:
+  app:
      build: .
+     image: "romybijoy/raiser_buddy_api:latest"
+     restart: always
+#     env_file:
+#       - .env
      environment:
-       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/raiserbuddy
-       SPRING_DATASOURCE_USERNAME: root
-       SPRING_DATASOURCE_PASSWORD: good
+       DB_HOST: mysqldb
+       DB_USER: admin
+       DB_PASSWORD: good
      ports:
-       - "8080:8080"
+       - 8085:8085
      depends_on:
-       - db
+       - mysqldb
+     networks:
+       - raiser-network
+  mysqldb:
+    image: "romybijoy/mysql:8.3.0"
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: good
+      MYSQL_DATABASE: raiserbuddy
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: good
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
+    networks:
+      - raiser-network
 volumes:
   db-data:
+networks:
+  raiser-network:

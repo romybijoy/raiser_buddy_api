@@ -1,8 +1,6 @@
 package com.project.raiserbuddy.service;
 
-import com.project.raiserbuddy.dto.DashboardDTO;
-import com.project.raiserbuddy.dto.SalesDataDTO;
-import com.project.raiserbuddy.dto.SalesReportDTO;
+import com.project.raiserbuddy.dto.*;
 import com.project.raiserbuddy.entity.Order;
 import com.project.raiserbuddy.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +45,16 @@ public class DashboardService {
 
     }
 
-    public List<SalesDataDTO> getSalesDataByMonth(LocalDateTime startDate, LocalDateTime endDate) {
-        return orderItemRepository.getSalesDataByMonth(startDate, endDate); }
+
+    public List<SalesMonthDataDTO> getMonthlySalesData() {
+        return orderRepository.findMonthlySalesData();
+    }
+
+    public List<SalesDailyDataDTO> getDailySalesData() {
+        return orderRepository.findDailySalesData();
+    }
+
+    public List<YearlySalesDataDTO> getYearlySalesData() {
+        return orderRepository.findYearlySalesData();
+    }
 }

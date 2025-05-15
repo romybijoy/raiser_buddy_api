@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,10 +21,10 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @PostMapping("/{categoryId}")
-    public ResponseEntity<ProductDTO> addProduct(@Valid @RequestBody Product product, @PathVariable Integer categoryId) {
+    @PostMapping(value = "/{categoryId}/{providerId}", consumes = {MediaType.APPLICATION_JSON_VALUE, "application/json;charset=UTF-8" })
+    public ResponseEntity<ProductDTO> addProduct(@Valid @RequestBody Product product, @PathVariable Integer categoryId, @PathVariable Integer providerId) {
 
-        ProductDTO savedProduct = productService.createProduct(categoryId, product);
+        ProductDTO savedProduct = productService.createProduct(categoryId, providerId, product);
 
         return new ResponseEntity<ProductDTO>(savedProduct, HttpStatus.CREATED);
     }
@@ -85,7 +86,7 @@ public class ProductController {
 //        return ResponseEntity.ok(response);
 //    }
 
-    @PutMapping("/{id}")
+    @PutMapping(value ="/{id}", consumes = {MediaType.APPLICATION_JSON_VALUE, "application/json;charset=UTF-8" })
     public ResponseEntity<ProductDTO> updateProduct(@RequestBody Product product,
                                                     @PathVariable Integer id) {
         ProductDTO updatedProduct = productService.updateProduct(id, product);

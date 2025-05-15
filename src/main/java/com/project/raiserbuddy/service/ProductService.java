@@ -3,11 +3,13 @@ package com.project.raiserbuddy.service;
 import com.project.raiserbuddy.dto.*;
 import com.project.raiserbuddy.entity.Category;
 import com.project.raiserbuddy.entity.Product;
+import com.project.raiserbuddy.entity.Provider;
 import com.project.raiserbuddy.exceptions.APIException;
 import com.project.raiserbuddy.exceptions.ProductException;
 import com.project.raiserbuddy.exceptions.ResourceNotFoundException;
 import com.project.raiserbuddy.repository.CategoryRepository;
 import com.project.raiserbuddy.repository.ProductRepository;
+import com.project.raiserbuddy.repository.ProviderRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
@@ -21,6 +23,9 @@ import java.util.stream.Collectors;
 public class ProductService {
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private ProviderRepository providerRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -65,11 +70,14 @@ public class ProductService {
         throw new ProductException("product not found with id "+id);
     }
 
-    public ProductDTO createProduct(Integer categoryId, Product product) {
+    public ProductDTO createProduct(Integer categoryId, Integer providerId, Product product) {
 
         ProductDTO resp = new ProductDTO();
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId, 404));
+
+        Provider provider = providerRepository.findById(providerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Provider", "id", providerId, 404));
 
         boolean isProductNotPresent = true;
 
@@ -87,10 +95,11 @@ public class ProductService {
 //            product.setImage("default.png");
 
             product.setCategory(category);
-product.setDiscount(product.getDiscount());
+            product.setProvider(provider);
+            product.setDiscount(product.getDiscount());
             double specialPrice = product.getPrice() - ((product.getDiscount() * 0.01) * product.getPrice());
             product.setSpecialPrice(specialPrice);
-product.setStatus(true);
+            product.setStatus(true);
             Product savedProduct = productRepository.save(product);
             resp.setMessage("Product Saved Successfully");
             resp.setStatusCode(201);
@@ -335,9 +344,10 @@ product.setStatus(true);
         product.setProductId(productId);
         product.setName(productFromDB.getName());
         product.setCategory(productFromDB.getCategory());
+        product.setProvider(productFromDB.getProvider());
         product.setReviews(productFromDB.getReviews());
         product.setStatus(true);
-        product.setImages(productFromDB.getImages());
+        product.setImages(product.getImages());
         double specialPrice = product.getPrice() - ((product.getDiscount() * 0.01) * product.getPrice());
         product.setSpecialPrice(specialPrice);
 

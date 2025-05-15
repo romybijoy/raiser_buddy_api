@@ -5,8 +5,10 @@ import com.project.raiserbuddy.dto.AddItemRequest;
 import com.project.raiserbuddy.dto.CartDTO;
 import com.project.raiserbuddy.entity.Cart;
 import com.project.raiserbuddy.entity.CartItem;
+import com.project.raiserbuddy.entity.Employee;
 import com.project.raiserbuddy.exceptions.ProductException;
 import com.project.raiserbuddy.exceptions.UserException;
+import com.project.raiserbuddy.repository.EmployeeRepository;
 import com.project.raiserbuddy.service.CartService;
 import com.project.raiserbuddy.service.UsersManagementService;
 import org.modelmapper.ModelMapper;
@@ -65,6 +67,8 @@ public class CartController {
     @Autowired
     private ModelMapper modelMapper;
 
+    private EmployeeRepository employeeRepository;
+
 //    public CartController(CartService cartService,UserService userService) {
 //        this.cartService=cartService;
 //        this.userService=userService;
@@ -93,5 +97,12 @@ public class CartController {
 
         return new ResponseEntity<>(item,HttpStatus.ACCEPTED);
 
+    }
+
+    @PutMapping("/updateSalary/{id}")
+    public void updateSalary(@PathVariable int id){
+        Employee e = employeeRepository.findById(id);
+
+        updateSalary(id);
     }
 }

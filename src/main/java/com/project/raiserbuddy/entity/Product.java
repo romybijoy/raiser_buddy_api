@@ -1,7 +1,6 @@
 package com.project.raiserbuddy.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,6 +16,7 @@ import java.util.Set;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIdentityInfo(scope=Product.class,generator=ObjectIdGenerators.PropertyGenerator.class, property="productId")
 public class Product {
 
     @Id
@@ -55,6 +55,7 @@ public class Product {
 //    private Set<Wishlist> wishlists;
 
     @ManyToMany(mappedBy = "products")
+//    @JsonBackReference("wishProRef")
     private Set<Wishlist> wishlists = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.EAGER)

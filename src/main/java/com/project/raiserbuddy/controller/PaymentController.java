@@ -56,9 +56,9 @@ public class PaymentController {
 	@Autowired
 	private CartItemRepository cartItemRepository;
 
-	@PostMapping("/payments/{orderId}")
+	@PostMapping("/payments/{orderId}/{amount}")
 	@Transactional
-	public ResponseEntity<PaymentLinkResponse> createPaymentLink(@PathVariable Integer orderId,
+	public ResponseEntity<PaymentLinkResponse> createPaymentLink(@PathVariable Integer orderId,@PathVariable double amount,
 																 @RequestHeader("Authorization") String jwt)
 			throws RazorpayException, UserException, OrderException, JSONException {
 
@@ -69,7 +69,7 @@ public class PaymentController {
 
 			// Create a JSON object with the payment link request parameters
 			JSONObject paymentLinkRequest = new JSONObject();
-			paymentLinkRequest.put("amount", order.getTotalDiscountedPrice() * 100);
+			paymentLinkRequest.put("amount", amount * 100);
 			paymentLinkRequest.put("currency", "INR");
 //		      paymentLinkRequest.put("expire_by",1691097057);
 //		      paymentLinkRequest.put("reference_id",order.getId().toString());
@@ -92,7 +92,7 @@ public class PaymentController {
 			paymentLinkRequest.put("reminder_enable", true);
 
 			// Set the callback URL and method
-			paymentLinkRequest.put("callback_url", "http://localhost:5000/payment/" + orderId);
+			paymentLinkRequest.put("callback_url", "https://app-raiserbuddy-com.vercel.app/payment/" + orderId);
 			paymentLinkRequest.put("callback_method", "get");
 
 			// Create the payment link using the paymentLink.create() method

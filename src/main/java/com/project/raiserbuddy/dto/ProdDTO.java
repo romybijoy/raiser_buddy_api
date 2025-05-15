@@ -36,7 +36,7 @@ public class ProdDTO {
     private CatgryDTO category;
 
     private boolean status;
-    private Provider provider;
+    private ProviderDTO provider;
     private double discount;
     private double specialPrice;
     private int sales;

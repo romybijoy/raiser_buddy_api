@@ -1,5 +1,8 @@
 package com.project.raiserbuddy.repository;
 
+import com.project.raiserbuddy.dto.SalesDailyDataDTO;
+import com.project.raiserbuddy.dto.SalesMonthDataDTO;
+import com.project.raiserbuddy.dto.YearlySalesDataDTO;
 import com.project.raiserbuddy.entity.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,5 +40,12 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 	@Query("SELECT COUNT(o) FROM Order o")
 	Long countOrders();
 
+	@Query("SELECT new com.project.raiserbuddy.dto.SalesMonthDataDTO(YEAR(o.orderDate), MONTH(o.orderDate), SUM(o.totalDiscountedPrice)) FROM Order o GROUP BY YEAR(o.orderDate), MONTH(o.orderDate) ORDER BY YEAR(o.orderDate), MONTH(o.orderDate)")
+	List<SalesMonthDataDTO> findMonthlySalesData();
 
+	@Query("SELECT new com.project.raiserbuddy.dto.SalesDailyDataDTO(DATE(o.orderDate), SUM(o.totalDiscountedPrice)) FROM Order o GROUP BY o.orderDate ORDER BY o.orderDate")
+	List<SalesDailyDataDTO> findDailySalesData();
+
+	@Query("SELECT new com.project.raiserbuddy.dto.YearlySalesDataDTO(YEAR(o.orderDate), SUM(o.totalDiscountedPrice)) FROM Order o GROUP BY YEAR(o.orderDate) ORDER BY YEAR(o.orderDate)")
+	List<YearlySalesDataDTO> findYearlySalesData();
 }

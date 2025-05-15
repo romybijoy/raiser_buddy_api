@@ -1,6 +1,7 @@
 package com.project.raiserbuddy.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.raiserbuddy.enums.ProviderType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -41,12 +42,12 @@ public class Provider{
     private String mobile_number;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "address_id",  referencedColumnName = "add_id", nullable = false)
+    @JoinColumn(name = "address_id",  referencedColumnName = "add_id")
     private Address address;
 
 
     @OneToMany(mappedBy = "provider", fetch = FetchType.LAZY,cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference("providerProRef")
+    @JsonManagedReference("providerProRef")
     private Set<Product> products;
 
     private LocalDateTime createdAt;

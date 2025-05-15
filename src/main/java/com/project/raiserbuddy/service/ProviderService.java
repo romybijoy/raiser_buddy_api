@@ -54,12 +54,12 @@ public class ProviderService {
             provider.setEmail(request.getEmail());
 
 
-           Address address = request.getAddress();
-           if (address.getAdd_id() == null) {
-               address = addressRepository.save(address);
-           }
+//           Address address = request.getAddress();
+//           if (address.getAdd_id() == null) {
+//               address = addressRepository.save(address);
+//           }
 
-            provider.setAddress(address);
+//            provider.setAddress(address);
             provider.setType(request.getType());
             provider.setName(request.getName());
             provider.setMobile_number(request.getMobile_number());

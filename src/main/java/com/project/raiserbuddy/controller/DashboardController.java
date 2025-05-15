@@ -28,10 +28,17 @@ public class DashboardController {
 	}
 
 	@GetMapping("/dashboard/monthly")
-	public List<SalesDataDTO> getSalesDataByMonth(@RequestParam String startDate, @RequestParam String endDate) {
-		DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-		LocalDateTime start = LocalDateTime.parse(startDate, formatter);
-		LocalDateTime end = LocalDateTime.parse(endDate, formatter);
-		return dashboardService.getSalesDataByMonth(start, end); }
+	public List<SalesMonthDataDTO> getSalesDataByMonth() {
+			return dashboardService.getMonthlySalesData();
+	}
 
+	@GetMapping("/dashboard/daily")
+	public List<SalesDailyDataDTO> getSalesDataByDaily() {
+		return dashboardService.getDailySalesData();
+	}
+
+	@GetMapping("/dashboard/yearly")
+	public List<YearlySalesDataDTO> getSalesDataByYearly() {
+		return dashboardService.getYearlySalesData();
+	}
 }
