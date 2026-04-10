@@ -1,37 +1,37 @@
-version: "3.8"
-services:
-  app:
-     build: .
-     image: "romybijoy/raiser_buddy_api:latest"
-     restart: always
-#     env_file:
-#       - .env
-     environment:
-       DB_HOST: mysqldb
-       DB_USER: admin
-       DB_PASSWORD: good
-     ports:
-       - 8085:8085
-     depends_on:
-       - mysqldb
-     networks:
-       - raiser-network
-  mysqldb:
-    image: "romybijoy/mysql:8.3.0"
-    restart: always
-    ports:
-      - 3306:3306
-    environment:
-      MYSQL_ROOT_PASSWORD: good
-      MYSQL_DATABASE: raiserbuddy
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: good
-    volumes:
-      - db-data:/var/lib/mysql
-      - ./mysql-init:/docker-entrypoint-initdb.d
-    networks:
-      - raiser-network
-volumes:
-  db-data:
-networks:
-  raiser-network:
+#version: "3.8"
+#services:
+#  app:
+#     build: .
+#     image: "romybijoy/raiser_buddy_api:latest"
+#     restart: always
+##     env_file:
+##       - .env
+#     environment:
+#       DB_HOST: mysqldb
+#       DB_USER: admin
+#       DB_PASSWORD: good
+#     ports:
+#       - 8085:8085
+#     depends_on:
+#       - mysqldb
+#     networks:
+#       - raiser-network
+#  mysqldb:
+#    image: "romybijoy/mysql:8.3.0"
+#    restart: always
+#    ports:
+#      - 3306:3306
+#    environment:
+#      MYSQL_ROOT_PASSWORD: good
+#      MYSQL_DATABASE: raiserbuddy
+#      MYSQL_USER: admin
+#      MYSQL_PASSWORD: good
+#    volumes:
+#      - db-data:/var/lib/mysql
+#      - ./mysql-init:/docker-entrypoint-initdb.d
+#    networks:
+#      - raiser-network
+#volumes:
+#  db-data:
+#networks:
+#  raiser-network:
