@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class UsersManagementService {
@@ -88,11 +87,11 @@ public class UsersManagementService {
 
         if(!Objects.equals(registrationRequest.getEmail(), "")) {
 
-            try {
-                emailUtil.sendOtpEmail(registrationRequest.getEmail(), otp);
-            } catch (MessagingException e) {
-                throw new RuntimeException("Unable to send otp please try again");
-            }
+//            try {
+//                emailUtil.sendOtpEmail(registrationRequest.getEmail(), otp);
+//            } catch (MessagingException e) {
+//                throw new RuntimeException("Unable to send otp please try again");
+//            }
         }}
         try {
             OurUsers ourUser = new OurUsers();
