@@ -49,75 +49,81 @@ public class OrderService {
 	@Autowired
 	public ModelMapper modelMapper;
 
+	@Transactional
 	public Order createOrder(String email, Address shippAddress) {
 
 		OurUsers user = userRepository.findByEmail(email).orElseThrow();
+
 		shippAddress.setUser(user);
 		Address address;
 
-		userRepository.save(user);
-
-		if(shippAddress.getAdd_id() != null){
-			address= shippAddress;
-		}
-		else{
-			address= addressRepository.save(shippAddress);
+		if (shippAddress.getAdd_id() != null) {
+			address = shippAddress;
+		} else {
+			address = addressRepository.save(shippAddress);
 			user.getAddresses().add(address);
 		}
-		Cart cart=cartService.findUserCart(user.getEmail());
-		List<OrderItem> orderItems=new ArrayList<>();
-		
-		for(CartItem item: cart.getCartItems()) {
-			OrderItem orderItem=new OrderItem();
-			
+
+		Cart cart = cartService.findUserCart(user.getEmail());
+		List<OrderItem> orderItems = new ArrayList<>();
+
+		for (CartItem item : cart.getCartItems()) {
+
+			Product product = productRepository.findById(item.getProduct().getProductId())
+					.orElseThrow(() -> new RuntimeException("Product not found"));
+
+			if (product.getQuantity() < item.getQuantity()) {
+				throw new RuntimeException("Insufficient stock");
+			}
+
+			// Update product
+			product.setQuantity(product.getQuantity() - item.getQuantity());
+			product.setSales(product.getSales() + item.getQuantity());
+			productRepository.save(product);
+
+			// Create order item
+			OrderItem orderItem = new OrderItem();
+			orderItem.setProduct(product);
+			orderItem.setQuantity(item.getQuantity());
 			orderItem.setPrice(item.getPrice());
-// start product deduction and sales update
-			Optional<Product> optionalProduct = productRepository.findById(item.getProduct().getProductId());
-			if (optionalProduct.isPresent()) {
-				Product product = optionalProduct.get();
-				if (product.getQuantity() >= item.getQuantity()) {
-					product.setQuantity(product.getQuantity() - item.getQuantity());
-					product.setSales(product.getSales() + 1);
-					productRepository.save(product);
+			orderItem.setDiscountedPrice(item.getDiscountedPrice());
+			orderItem.setUserId(item.getUserId());
 
-					orderItem.setProduct(item.getProduct());
-
-					orderItem.setQuantity(item.getQuantity());
-					orderItem.setUserId(item.getUserId());
-					orderItem.setDiscountedPrice(item.getDiscountedPrice());
-
-
-					OrderItem createdOrderItem = orderItemRepository.save(orderItem);
-
-					orderItems.add(createdOrderItem);
-				}
-				}// end product deduction and sales update
+			orderItems.add(orderItem);
 		}
 
-		Order createdOrder=new Order();
+		// Create Order
+		Order createdOrder = new Order();
 		createdOrder.setUser(user);
 		createdOrder.setOrderItems(orderItems);
 		createdOrder.setTotalPrice(cart.getTotalPrice());
 		createdOrder.setTotalDiscountedPrice(cart.getTotalDiscountedPrice());
 		createdOrder.setDiscount(cart.getDiscount());
 		createdOrder.setTotalItem(cart.getTotalItem());
-
-		System.out.println(address);
 		createdOrder.setShippingAddress(address);
+
 		createdOrder.setOrderDate(LocalDateTime.now());
+
+		// Choose based on your entity
+		createdOrder.setExpectedDeliveryDate(LocalDateTime.now().plusDays(3));
+
 		createdOrder.setOrderStatus(OrderStatus.PENDING);
 		createdOrder.getPaymentDetails().setStatus(PaymentStatus.PENDING);
 		createdOrder.setCreatedAt(LocalDateTime.now());
-		
-		Order savedOrder=orderRepository.save(createdOrder);
-		
-		for(OrderItem item:orderItems) {
+
+		Order savedOrder = orderRepository.save(createdOrder);
+
+		// Link items
+		for (OrderItem item : orderItems) {
 			item.setOrder(savedOrder);
 			orderItemRepository.save(item);
 		}
 
+		// Clear cart
+//		cart.getCartItems().clear();
+//		cartService.saveCart(cart);
+
 		return savedOrder;
-		
 	}
 
 
@@ -156,36 +162,73 @@ public class OrderService {
 
 
 	public Order confirmedOrder(Integer orderId) throws OrderException {
-		Order order=findOrderById(orderId);
+		Order order = findOrderById(orderId);
+
+		if (order.getOrderStatus() != OrderStatus.PLACED) {
+			throw new OrderException("Only placed orders can be confirmed");
+		}
+
 		order.setOrderStatus(OrderStatus.CONFIRMED);
-		
-		
+
 		return orderRepository.save(order);
 	}
 
 	public Order shippedOrder(Integer orderId) throws OrderException {
-		Order order=findOrderById(orderId);
+		Order order = findOrderById(orderId);
+
+		if (order.getOrderStatus() != OrderStatus.CONFIRMED) {
+			throw new OrderException("Order must be confirmed before shipping");
+		}
+
 		order.setOrderStatus(OrderStatus.SHIPPED);
+
 		return orderRepository.save(order);
 	}
 
 
 	public Order deliveredOrder(Integer orderId) throws OrderException {
-		Order order=findOrderById(orderId);
+		Order order = findOrderById(orderId);
+
+		// Prevent invalid transitions
+		if (order.getOrderStatus() == OrderStatus.DELIVERED) {
+			throw new OrderException("Order already delivered");
+		}
+
+		if (order.getOrderStatus() == OrderStatus.CANCELLED) {
+			throw new OrderException("Cannot deliver a cancelled order");
+		}
+
 		order.setOrderStatus(OrderStatus.DELIVERED);
+
+		if (order.getDeliveredAt() == null) {
+			order.setDeliveredAt(LocalDateTime.now());
+		}
+
 		return orderRepository.save(order);
 	}
 
 
 	public Order cancledOrder(Integer orderId, Integer userId) throws OrderException {
-		Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
-		OurUsers user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+		Order order = findOrderById(orderId);
 
-		// Update wallet balance
+		if (order.getOrderStatus() == OrderStatus.DELIVERED) {
+			throw new OrderException("Delivered order cannot be cancelled");
+		}
+
+		if (order.getOrderStatus() == OrderStatus.CANCELLED) {
+			throw new OrderException("Order already cancelled");
+		}
+
+		// Refund only once
+		OurUsers user = userRepository.findById(userId)
+				.orElseThrow(() -> new RuntimeException("User not found"));
+
 		Double balance = user.getWalletBalance() + order.getTotalDiscountedPrice();
 		user.setWalletBalance(balance);
 		userRepository.save(user);
+
 		order.setOrderStatus(OrderStatus.CANCELLED);
+
 		return orderRepository.save(order);
 	}
 

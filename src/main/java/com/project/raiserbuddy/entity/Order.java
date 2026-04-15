@@ -40,8 +40,9 @@ public class Order {
 
 	private LocalDateTime orderDate;
 
-	private LocalDateTime deliveryDate;
+	private LocalDateTime expectedDeliveryDate;
 
+	private LocalDateTime deliveredAt;
 
 	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
 	@JoinColumn(name = "shipping_address",  referencedColumnName = "add_id")
