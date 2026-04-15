@@ -24,8 +24,14 @@ public class Product {
 
     private String name;
 
-    @Column(length = 1200)
+    @ElementCollection
+    @CollectionTable(
+            name = "product_images",
+            joinColumns = @JoinColumn(name = "product_id")
+    )
+    @Column(name = "image_url")
     private List<String> images = new ArrayList<>();
+
     private String shortDesc;
     private String desc;
     private Double avgRating;
