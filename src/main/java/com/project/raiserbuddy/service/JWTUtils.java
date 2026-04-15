@@ -26,18 +26,25 @@ String secreteString= "843567893696976453275974432697R634976R738467TR678T34865R6
 
     public String generateToken(UserDetails userDetails)
     {
-        return Jwts.builder()
-                .subject(userDetails.getUsername())
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis()+EXPIRATION_TIME))
-                        .signWith(Key)
-                        .compact();
-    }
+        HashMap<String, Object> claims = new HashMap<>();
 
-    public  String generateRefreshToken(HashMap<String, Object> claims, UserDetails userDetails){
+        claims.put("role", userDetails.getAuthorities().iterator().next().getAuthority());
+
         return Jwts.builder()
                 .claims(claims)
                 .subject(userDetails.getUsername())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(Key)
+                .compact();
+    }
+
+    public String generateRefreshToken(HashMap<String, Object> claims, UserDetails userDetails){
+        claims.put("role", userDetails.getAuthorities().iterator().next().getAuthority());
+
+        return Jwts.builder()
+                .claims(claims)
+                .subject(userDetails.getUsername()) // email
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(Key)
