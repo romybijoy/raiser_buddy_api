@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name= "ourusers")
@@ -53,7 +52,6 @@ public class OurUsers implements UserDetails {
 
     private String block_reason;
 
-    @Embedded
     @ElementCollection
     @CollectionTable(name="payment_information",joinColumns = @JoinColumn(name="user_id"))
     private List<PaymentInformation> paymentInformation=new ArrayList<>();
@@ -71,10 +69,6 @@ public class OurUsers implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)
     @JsonManagedReference("userOrderRef")
     private List<Order> orders=new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonManagedReference("wishRef")
-    private Set<Wishlist> wishlists;
 
     private LocalDateTime createdAt;
 

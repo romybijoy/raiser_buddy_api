@@ -6,9 +6,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name= "product")
@@ -49,14 +47,6 @@ public class Product {
     @JoinColumn(name = "category", referencedColumnName = "category_id")
     @JsonBackReference("procatref")
     private Category category;
-
-//    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY,cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JsonBackReference("prodWishRef")
-//    private Set<Wishlist> wishlists;
-
-    @ManyToMany(mappedBy = "products")
-//    @JsonBackReference("wishProRef")
-    private Set<Wishlist> wishlists = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "provider", referencedColumnName = "id")

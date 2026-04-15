@@ -2,10 +2,6 @@ package com.project.raiserbuddy.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.project.raiserbuddy.entity.Category;
-import com.project.raiserbuddy.entity.OurUsers;
-import com.project.raiserbuddy.entity.Product;
-import com.project.raiserbuddy.entity.Wishlist;
 import lombok.Data;
 
 import java.util.List;
