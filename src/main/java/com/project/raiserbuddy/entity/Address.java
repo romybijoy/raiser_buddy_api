@@ -28,7 +28,7 @@ public class Address {
     private String mobile;
     private boolean is_default;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user",  referencedColumnName = "id")
     @JsonBackReference("addRef")
     private OurUsers user;

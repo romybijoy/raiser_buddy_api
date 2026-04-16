@@ -4,6 +4,7 @@ import com.project.raiserbuddy.config.AppConstants;
 import com.project.raiserbuddy.dto.*;
 import com.project.raiserbuddy.entity.OurUsers;
 import com.project.raiserbuddy.enums.Role;
+import com.project.raiserbuddy.repository.UsersRepository;
 import com.project.raiserbuddy.service.UsersManagementService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,9 @@ import java.security.Principal;
 public class UserManagementController {
     @Autowired
     private UsersManagementService usersManagementService;
+
+    @Autowired
+    private UsersRepository usersRepository;
 
     @PostMapping("/auth/register")
     public ResponseEntity<UsersDTO> register( @Valid @RequestBody UsersRequest reg){
@@ -117,6 +121,20 @@ public class UserManagementController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/user/update-profile")
+    public ResponseEntity<?> updateProfile(@RequestBody OurUsers updatedUser) {
+
+        OurUsers user = usersRepository.findById(updatedUser.getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setName(updatedUser.getName());
+        user.setMobile_number(updatedUser.getMobile_number());
+
+        usersRepository.save(user);
+
+        return ResponseEntity.ok(user);
+    }
+
     @GetMapping("/adminuser/get-profile")
     public ResponseEntity<UsersDTO> getMyProfile(Principal principal){
         String email = principal.getName();
@@ -174,4 +192,7 @@ public class UserManagementController {
         }
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
+
+
+
 }
