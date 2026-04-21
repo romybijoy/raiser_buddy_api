@@ -1,6 +1,7 @@
 package com.project.raiserbuddy.controller;
 
 import com.project.raiserbuddy.dto.OrderDTO;
+import com.project.raiserbuddy.dto.OrderRequest;
 import com.project.raiserbuddy.entity.Address;
 import com.project.raiserbuddy.entity.Order;
 import com.project.raiserbuddy.exceptions.OrderException;
@@ -28,13 +29,14 @@ public class OrderController {
 	public ModelMapper modelMapper;
 
 	@PostMapping("/{email}")
-	public ResponseEntity<Order> createOrderHandler(@RequestBody Address spippingAddress,
-													@PathVariable String email) throws UserException{
-		
-		Order order =orderService.createOrder(email, spippingAddress);
-		
-		return new ResponseEntity<Order>(order,HttpStatus.OK);
-		
+	public ResponseEntity<Order> createOrderHandler(
+			@RequestBody OrderRequest request,
+			@PathVariable String email
+	) throws UserException {
+
+		Order order = orderService.createOrder(email, request.getAddress(), request.getCouponCode(), request.isUseWallet());
+
+		return new ResponseEntity<>(order, HttpStatus.OK);
 	}
 
 

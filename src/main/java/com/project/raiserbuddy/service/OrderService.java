@@ -42,6 +42,8 @@ public class OrderService {
 	private CartItemRepository cartItemRepository;
 	@Autowired
 	private CartRepository cartRepository;
+	@Autowired
+	private CouponRepository couponRepository;
 
 	@Autowired
 	private ProductRepository productRepository;
@@ -50,17 +52,17 @@ public class OrderService {
 	public ModelMapper modelMapper;
 
 	@Transactional
-	public Order createOrder(String email, Address shippAddress) {
+	public Order createOrder(String email, Address shippAddress, String couponCode, boolean useWallet) {
 
 		OurUsers user = userRepository.findByEmail(email).orElseThrow();
 
+		// Address
 		shippAddress.setUser(user);
-		Address address;
+		Address address = (shippAddress.getAdd_id() != null)
+				? shippAddress
+				: addressRepository.save(shippAddress);
 
-		if (shippAddress.getAdd_id() != null) {
-			address = shippAddress;
-		} else {
-			address = addressRepository.save(shippAddress);
+		if (shippAddress.getAdd_id() == null) {
 			user.getAddresses().add(address);
 		}
 
@@ -76,12 +78,10 @@ public class OrderService {
 				throw new RuntimeException("Insufficient stock");
 			}
 
-			// Update product
 			product.setQuantity(product.getQuantity() - item.getQuantity());
 			product.setSales(product.getSales() + item.getQuantity());
 			productRepository.save(product);
 
-			// Create order item
 			OrderItem orderItem = new OrderItem();
 			orderItem.setProduct(product);
 			orderItem.setQuantity(item.getQuantity());
@@ -92,38 +92,68 @@ public class OrderService {
 			orderItems.add(orderItem);
 		}
 
-		// Create Order
-		Order createdOrder = new Order();
-		createdOrder.setUser(user);
-		createdOrder.setOrderItems(orderItems);
-		createdOrder.setTotalPrice(cart.getTotalPrice());
-		createdOrder.setTotalDiscountedPrice(cart.getTotalDiscountedPrice());
-		createdOrder.setDiscount(cart.getDiscount());
-		createdOrder.setTotalItem(cart.getTotalItem());
-		createdOrder.setShippingAddress(address);
+		Order order = new Order();
+		order.setUser(user);
+		order.setOrderItems(orderItems);
+		order.setTotalPrice(cart.getTotalPrice());
+		order.setTotalDiscountedPrice(cart.getTotalDiscountedPrice());
+		order.setDiscount(cart.getDiscount());
+		order.setTotalItem(cart.getTotalItem());
+		order.setShippingAddress(address);
 
-		createdOrder.setOrderDate(LocalDateTime.now());
+		// 🔹 Coupon
+		Coupon coupon = (couponCode != null)
+				? couponRepository.findByCode(couponCode).orElse(null)
+				: null;
 
-		// Choose based on your entity
-		createdOrder.setExpectedDeliveryDate(LocalDateTime.now().plusDays(3));
+		double base = cart.getTotalDiscountedPrice();
 
-		createdOrder.setOrderStatus(OrderStatus.PENDING);
-		createdOrder.getPaymentDetails().setStatus(PaymentStatus.PENDING);
-		createdOrder.setCreatedAt(LocalDateTime.now());
+		double couponDiscount = (coupon != null)
+				? (base * coupon.getDiscount() / 100)
+				: 0;
 
-		Order savedOrder = orderRepository.save(createdOrder);
+		double delivery = base < 1000 ? 40 : 0;
 
-		// Link items
-		for (OrderItem item : orderItems) {
-			item.setOrder(savedOrder);
-			orderItemRepository.save(item);
+		double finalPrice = base + delivery - couponDiscount;
+		finalPrice = Math.max(finalPrice, 0);
+
+//  WALLET LOGIC HERE
+		double walletUsed = 0;
+
+		if (useWallet && order.getWalletUsedAmount() == 0) {
+			double walletBalance = Optional.ofNullable(user.getWalletBalance()).orElse(0.0);
+
+			walletUsed = Math.min(walletBalance, finalPrice);
+
+			user.setWalletBalance(walletBalance - walletUsed);
+			userRepository.save(user);
 		}
 
-		// Clear cart
-//		cart.getCartItems().clear();
-//		cartService.saveCart(cart);
+		double finalPayable = Math.max(finalPrice - walletUsed, 0);
 
-		return savedOrder;
+		order.setCouponDiscount(couponDiscount);
+		order.setDeliveryCharge(delivery);
+		order.setFinalPrice(finalPrice);
+		order.setWalletUsedAmount(walletUsed);
+		order.setFinalPayableAmount(finalPayable);
+		order.setOrderId(UUID.randomUUID().toString());
+		order.setOrderDate(LocalDateTime.now());
+		order.setExpectedDeliveryDate(LocalDateTime.now().plusDays(3));
+		order.setCreatedAt(LocalDateTime.now());
+
+		order.setOrderStatus(OrderStatus.PENDING);
+		order.setPaymentStatus(PaymentStatus.PENDING);
+		order.setRefunded(false);
+
+		PaymentDetails pd = new PaymentDetails();
+		pd.setStatus(PaymentStatus.PENDING);
+		order.setPaymentDetails(pd);
+
+		for (OrderItem item : orderItems) {
+			item.setOrder(order);
+		}
+
+		return orderRepository.save(order);
 	}
 
 
@@ -144,19 +174,37 @@ public class OrderService {
 
 	@Transactional
 	public Order placedOrder(Integer orderId) throws OrderException {
-		Order order=findOrderById(orderId);
+
+		Order order = findOrderById(orderId);
+
+		// Prevent duplicate placement
+		if (order.getOrderStatus() == OrderStatus.PLACED) {
+			throw new OrderException("Order already placed");
+		}
+
+		// Set order details
 		order.setOrderStatus(OrderStatus.PLACED);
 		order.setOrderId(UUID.randomUUID().toString());
-		Integer userId = order.getUser().getId();
-		order.getOrderItems().forEach((item) -> {
-			Cart cart = cartRepository.findByUserId(userId);
-			System.out.println(item.getProduct().getProductId());
+		order.setOrderDate(LocalDateTime.now());
+		order.setCreatedAt(LocalDateTime.now());
 
-			System.out.println(cart.getCartId());
-			cartItemRepository.deleteCartItemByProductIdAndCartId(cart.getCartId(),item.getProduct().getProductId());
+		// COD → payment pending
+		order.setPaymentStatus(PaymentStatus.PENDING);
+
+		Integer userId = order.getUser().getId();
+
+		// Fetch cart once
+		Cart cart = cartRepository.findByUserId(userId);
+
+		// Remove ordered items from cart
+		order.getOrderItems().forEach((item) -> {
+			cartItemRepository.deleteCartItemByProductIdAndCartId(
+					cart.getCartId(),
+					item.getProduct().getProductId()
+			);
 		});
 
-		return order;
+		return orderRepository.save(order);
 	}
 
 
@@ -208,26 +256,50 @@ public class OrderService {
 	}
 
 
+	@Transactional
 	public Order cancledOrder(Integer orderId, Integer userId) throws OrderException {
+
 		Order order = findOrderById(orderId);
 
-		if (order.getOrderStatus() == OrderStatus.DELIVERED) {
-			throw new OrderException("Delivered order cannot be cancelled");
+		if (!order.getUser().getId().equals(userId)) {
+			throw new OrderException("Unauthorized action");
+		}
+
+		if (order.getOrderStatus() == OrderStatus.DELIVERED ||
+				order.getOrderStatus() == OrderStatus.SHIPPED) {
+			throw new OrderException("Order cannot be cancelled");
 		}
 
 		if (order.getOrderStatus() == OrderStatus.CANCELLED) {
-			throw new OrderException("Order already cancelled");
+			throw new OrderException("Already cancelled");
 		}
 
-		// Refund only once
-		OurUsers user = userRepository.findById(userId)
-				.orElseThrow(() -> new RuntimeException("User not found"));
+		if (order.getPaymentStatus() == PaymentStatus.COMPLETED && !order.isRefunded()) {
 
-		Double balance = user.getWalletBalance() + order.getTotalDiscountedPrice();
-		user.setWalletBalance(balance);
-		userRepository.save(user);
+			OurUsers user = userRepository.findById(userId)
+					.orElseThrow(() -> new RuntimeException("User not found"));
+
+			double refundAmount =
+					(order.getFinalPayableAmount() != null ? order.getFinalPayableAmount() : 0)
+							+ (order.getWalletUsedAmount() != 0 ? order.getWalletUsedAmount() : 0);
+
+			System.out.println("Refunding: " + refundAmount);
+
+			double currentBalance = user.getWalletBalance() != null
+					? user.getWalletBalance()
+					: 0;
+
+			user.setWalletBalance(currentBalance + refundAmount);
+			userRepository.save(user);
+
+			System.out.println("Saved wallet balance: " + user.getWalletBalance());
+
+			order.setRefunded(true);
+			order.setRefundedAt(LocalDateTime.now());
+		}
 
 		order.setOrderStatus(OrderStatus.CANCELLED);
+		order.setPaymentStatus(PaymentStatus.REFUNDED);
 
 		return orderRepository.save(order);
 	}
@@ -325,6 +397,57 @@ public class OrderService {
 		
 		orderRepository.deleteById(orderId);
 		
+	}
+
+	@Transactional
+	public Order updateOrderStatus(Integer orderId, OrderStatus newStatus) throws OrderException {
+
+		Order order = findOrderById(orderId);
+		OrderStatus current = order.getOrderStatus();
+
+		// Basic transition validation
+		if (current == OrderStatus.PLACED && newStatus == OrderStatus.CONFIRMED) {
+			order.setOrderStatus(OrderStatus.CONFIRMED);
+		}
+
+		else if (current == OrderStatus.CONFIRMED && newStatus == OrderStatus.SHIPPED) {
+			order.setOrderStatus(OrderStatus.SHIPPED);
+			// optional
+//			 order.setShippedAt(LocalDateTime.now());
+		}
+
+		else if (current == OrderStatus.SHIPPED && newStatus == OrderStatus.DELIVERED) {
+			order.setOrderStatus(OrderStatus.DELIVERED);
+			order.setDeliveredAt(LocalDateTime.now());
+
+			// COD → mark payment completed
+			if (order.getPaymentStatus() == PaymentStatus.PENDING) {
+				order.setPaymentStatus(PaymentStatus.COMPLETED);
+			}
+		}
+
+		else if ((current == OrderStatus.PLACED || current == OrderStatus.CONFIRMED)
+				&& newStatus == OrderStatus.CANCELLED) {
+
+			order.setOrderStatus(OrderStatus.CANCELLED);
+			order.setCancelledAt(LocalDateTime.now());
+
+			// refund if paid
+			if (order.getPaymentStatus() == PaymentStatus.COMPLETED && !order.isRefunded()) {
+				OurUsers user = order.getUser();
+				user.setWalletBalance(user.getWalletBalance() + order.getTotalDiscountedPrice());
+				userRepository.save(user);
+
+				order.setRefunded(true);
+				order.setRefundedAt(LocalDateTime.now());
+			}
+		}
+
+		else {
+			throw new OrderException("Invalid status update");
+		}
+
+		return orderRepository.save(order);
 	}
 
 }

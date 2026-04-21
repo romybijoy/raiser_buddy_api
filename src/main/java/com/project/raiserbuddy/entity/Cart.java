@@ -26,7 +26,12 @@ public class Cart {
     private OurUsers user;
 
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "cart", cascade = CascadeType.ALL)
+    @OneToMany(
+            fetch = FetchType.LAZY,
+            mappedBy = "cart",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     @JsonManagedReference("cartRef")
     @Column(name = "cart_items")
     private Set<CartItem> cartItems = new HashSet<>();

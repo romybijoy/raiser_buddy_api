@@ -4,6 +4,7 @@ import com.project.raiserbuddy.config.AppConstants;
 import com.project.raiserbuddy.dto.APIResponse;
 import com.project.raiserbuddy.dto.OrderResponse;
 import com.project.raiserbuddy.entity.Order;
+import com.project.raiserbuddy.enums.OrderStatus;
 import com.project.raiserbuddy.exceptions.OrderException;
 import com.project.raiserbuddy.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +68,16 @@ public class AdminOrderController {
 //		Order order=orderService.cancledOrder(orderId);
 //		return new ResponseEntity<Order>(order,HttpStatus.ACCEPTED);
 //	}
+
+	@PutMapping("/{orderId}/status")
+	public ResponseEntity<Order> updateOrderStatus(
+			@PathVariable Integer orderId,
+			@RequestParam("status") OrderStatus status
+	) throws OrderException {
+
+		Order order = orderService.updateOrderStatus(orderId, status);
+		return new ResponseEntity<>(order, HttpStatus.ACCEPTED);
+	}
 	
 	@DeleteMapping("/{orderId}/delete")
 	public ResponseEntity<APIResponse> deleteOrderHandler(@PathVariable Integer orderId,

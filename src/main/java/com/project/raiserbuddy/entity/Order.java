@@ -3,7 +3,9 @@ package com.project.raiserbuddy.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.project.raiserbuddy.enums.CancelledBy;
 import com.project.raiserbuddy.enums.OrderStatus;
+import com.project.raiserbuddy.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -61,6 +63,33 @@ public class Order {
 	private OrderStatus orderStatus;
 
 	private int totalItem;
+
+	private boolean refunded = false;
+	private LocalDateTime refundedAt;
+
+	@Enumerated(EnumType.STRING)
+	private CancelledBy cancelledBy;
+
+	private String cancelReason;
+
+	private LocalDateTime cancelledAt;
+
+	@Enumerated(EnumType.STRING)
+	private PaymentStatus paymentStatus;
+
+	private double walletUsedAmount;
+
+	private Double finalPayableAmount;
+
+	private String paymentGatewayOrderId;
+
+	private String paymentLinkId;
+
+	private double couponDiscount;
+
+	private double deliveryCharge;
+
+	private double finalPrice;          // after coupon + delivery
 
 	private LocalDateTime createdAt;
 

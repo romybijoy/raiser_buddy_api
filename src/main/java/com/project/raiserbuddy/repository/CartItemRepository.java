@@ -3,6 +3,7 @@ package com.project.raiserbuddy.repository;
 import com.project.raiserbuddy.entity.Cart;
 import com.project.raiserbuddy.entity.CartItem;
 import com.project.raiserbuddy.entity.Product;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -26,8 +27,9 @@ public interface CartItemRepository extends JpaRepository<CartItem, Integer> {
 //	Order findOrderByEmailAndOrderId(String email, Integer orderId);
 
     @Modifying
+    @Transactional
     @Query("DELETE FROM CartItem ci WHERE ci.cart.cartId = ?1 AND ci.product.productId = ?2")
-    void deleteCartItemByProductIdAndCartId(Integer Integer, Integer cartId);
+    void deleteCartItemByProductIdAndCartId(Integer cartId, Integer productId);
 
       @Query("SELECT ci From CartItem ci Where ci.cart=:cart And ci.product=:product And ci.userId=:userId")
     public CartItem isCartItemExist(@Param("cart")Cart cart,@Param("product")Product product, @Param("userId")Integer userId);

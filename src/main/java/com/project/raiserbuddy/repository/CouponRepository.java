@@ -12,12 +12,13 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CouponRepository extends JpaRepository<Coupon, Integer> {
     List<Coupon> findAll();
 
-    Coupon findByCode(String code);
+    Optional<Coupon> findByCode(String code);
 
     @Transactional
     @Query(value = "UPDATE coupon p SET p.status = false WHERE p.id = ?1", nativeQuery = true)

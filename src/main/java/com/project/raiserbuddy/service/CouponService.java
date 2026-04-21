@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Transactional
 @Service
@@ -60,16 +61,21 @@ public class CouponService {
         return couponResponse;
     }
 
-    public CouponDTO  createCoupon(Coupon coupon){
+    public CouponDTO createCoupon(Coupon coupon) {
+
         CouponDTO resp = new CouponDTO();
-        Coupon savedCoupon = couponRepository.findByCode(coupon.getCode());
 
-        if (savedCoupon != null) {
-            throw new APIException("Coupon with the code '" + coupon.getCode() + "' already exists !!!", 409);
+        Optional<Coupon> existing = couponRepository.findByCode(coupon.getCode());
+
+        if (existing.isPresent()) {
+            throw new APIException(
+                    "Coupon with the code '" + coupon.getCode() + "' already exists !!!",
+                    409
+            );
         }
-        savedCoupon = couponRepository.save(coupon);
 
-        System.out.println(savedCoupon);
+        Coupon savedCoupon = couponRepository.save(coupon);
+
         resp.setMessage("Coupon Saved Successfully");
         resp.setStatusCode(201);
         modelMapper.map(savedCoupon, resp);
@@ -78,11 +84,10 @@ public class CouponService {
     }
 
     public Coupon validateCoupon(String code) {
-        Coupon coupon = couponRepository.findByCode(code);
-        if (coupon != null && coupon.getValidUntil().after(new Date())) {
-            return coupon;
-        }
-        return null;
+
+        return couponRepository.findByCode(code)
+                .filter(coupon -> coupon.getValidUntil().after(new Date()))
+                .orElseThrow(() -> new RuntimeException("Invalid or expired coupon"));
     }
 
     public CouponDTO deleteCoupon(Integer id) {

@@ -1,8 +1,5 @@
 package com.project.raiserbuddy.dto;
 
-import com.project.raiserbuddy.entity.Address;
-import com.project.raiserbuddy.entity.OrderItem;
-import com.project.raiserbuddy.entity.OurUsers;
 import com.project.raiserbuddy.entity.PaymentDetails;
 import com.project.raiserbuddy.enums.OrderStatus;
 import lombok.AllArgsConstructor;
@@ -43,8 +40,17 @@ public class OrderDTO {
 
     private int totalItem;
 
+    private double walletUsedAmount;
+
+    private double finalPayableAmount;
+
+    private double couponDiscount;
+
+    private double deliveryCharge;
+
+    private double finalPrice;
+
     private LocalDateTime createdAt;
 
-    public OrderDTO(Integer id, List<OrderItem> orderItems, OurUsers user, LocalDateTime orderDate, Integer discount, LocalDateTime deliveryDate, OrderStatus orderStatus, Integer totalDiscountedPrice, double totalPrice, int totalItem, AddressDTO addressDTO) {
-    }
+
 }

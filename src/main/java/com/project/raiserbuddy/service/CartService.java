@@ -276,4 +276,10 @@ public class CartService {
         return isPresent;
     }
 
+    @Transactional
+    public void clearCart(Cart cart) {
+        cart.getCartItems().clear();
+        cartRepository.save(cart);
+    }
+
 }
